@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Scissors, BarChart2, Download, Clock, Share2, Youtube, Loader2, Sparkles, CheckCircle, Github } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Scissors, BarChart2, Download, Clock, Share2, Youtube, Loader2, Sparkles, CheckCircle, Github, Hash, FileText, Star } from 'lucide-react';
 
 const App = () => {
   const [url, setUrl] = useState('');
@@ -30,13 +30,13 @@ const App = () => {
     setActiveClip(null);
     setProgress(0);
 
-    // Simulasi Proses Analisis AI
+    // Simulasi Proses Analisis AI sesuai Persona "Expert Clipper"
     const steps = [
-      "Mengunduh transkrip audio...",
-      "Analisis Semantik & SEO Keywords...",
-      "Mendeteksi pola retensi audiens...",
-      "Optimasi Judul Clickbait & Viral...",
-      "Finalisasi klip..."
+      "Menginisialisasi Persona: Tim Clipper Expert...",
+      "Scanning durasi 60-180 detik per segmen...",
+      "Menganalisis Hook & Retention Rate...",
+      "Generate Deskripsi & Hashtag SEO...",
+      "Menghitung Rating Viralitas (1-10)..."
     ];
 
     let currentStep = 0;
@@ -45,7 +45,7 @@ const App = () => {
       setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval);
-          generateMockClips(id);
+          generateExpertClips(id);
           setIsAnalyzing(false);
           return 100;
         }
@@ -56,83 +56,103 @@ const App = () => {
           currentStep++;
         }
         
-        return prev + 2; // Kecepatan loading
+        return prev + 1; // Sedikit lebih lambat biar terasa "mikir"
       });
-    }, 100);
+    }, 80);
   };
 
-  // Generate Klip dengan Judul SEO Friendly & Viral
-  const generateMockClips = (vidId) => {
+  // Generate Klip dengan Logika Expert Clipper (Durasi 60-180s, Rating 1-10)
+  const generateExpertClips = (vidId) => {
     const generatedClips = [
       { 
         id: 1, 
-        title: "NGAKAK ABIS! Momen Paling Lucu yang Bikin Sakit Perut (Wajib Tonton)", 
-        start: 30, end: 45, 
-        score: 98, 
-        reason: "Tawa keras & lonjakan volume audio terdeteksi" 
+        title: "RAHASIA BISNIS: Cara Scale Up Tanpa Modal Besar (Wajib Tahu)", 
+        start: 60, end: 185, // 125 detik
+        score: 9.8, 
+        description: "Strategi rahasia yang jarang dibongkar para mentor bisnis. Bagian ini menjelaskan mindset bootstrapping yang sangat relate untuk pemula.",
+        hashtags: ["#BisnisOnline", "#TipsSukses", "#Entrepreneur", "#ScaleUp"],
+        reason: "Hook sangat kuat di detik awal, retensi audiens stabil hingga akhir klip."
       },
       { 
         id: 2, 
-        title: "RAHASIA SUKSES: Inti Pembahasan yang Jarang Orang Tahu (Terungkap)", 
-        start: 120, end: 150, 
-        score: 95, 
-        reason: "High retention rate & kata kunci bernilai tinggi" 
+        title: "KONTROVERSIAL! Debat Panas Soal Kebijakan Baru", 
+        start: 300, end: 450, // 150 detik
+        score: 9.5, 
+        description: "Momen ketegangan memuncak saat narasumber saling adu argumen. Emosi yang intens memancing komentar netizen.",
+        hashtags: ["#DebatPanas", "#ViralIndonesia", "#NewsUpdate", "#Reaksi"],
+        reason: "Emosi tinggi memicu engagement komentar (debat) di kolom komentar."
       },
       { 
         id: 3, 
-        title: "FAKTA MENGEJUTKAN! Ternyata Selama Ini Kita Salah? 😱", 
-        start: 200, end: 215, 
-        score: 92, 
-        reason: "Pernyataan kontroversial & trending topic" 
+        title: "TUTORIAL EDITING: Transisi Mulus Cuma Pakai HP", 
+        start: 600, end: 700, // 100 detik
+        score: 9.2, 
+        description: "Step-by-step praktis membuat transisi video yang estetik hanya bermodalkan smartphone. Sangat save-able.",
+        hashtags: ["#TutorialEdit", "#CapCutEdit", "#VideoHacks", "#ContentCreator"],
+        reason: "Nilai edukasi tinggi, orang cenderung akan 'Save' dan 'Share'."
       },
       { 
         id: 4, 
-        title: "JANGAN LAKUKAN INI! Kesalahan Fatal yang Sering Diabaikan", 
-        start: 310, end: 325, 
-        score: 89, 
-        reason: "Emosi negatif (fear/warning) pemicu klik" 
+        title: "KISAH INSPIRATIF: Dari Nol Sampai Punya Omzet Milyaran", 
+        start: 900, end: 1020, // 120 detik
+        score: 9.0, 
+        description: "Cerita perjuangan yang menyentuh hati dan memotivasi. Bagian terberat saat bangkrut diceritakan dengan sangat emosional.",
+        hashtags: ["#MotivasiSukses", "#KisahNyata", "#InspirasiHarian", "#Perjuangan"],
+        reason: "Narrative arc yang kuat membangun koneksi emosional dengan penonton."
       },
       { 
         id: 5, 
-        title: "CARA CEPAT KAYA? Kesimpulan Tajam dari Pakar Ekonomi", 
-        start: 400, end: 420, 
-        score: 88, 
-        reason: "Pacing bicara cepat & keyword finansial" 
+        title: "JANGAN SALAH PILIH! 3 Tanda Pasangan Red Flag", 
+        start: 1200, end: 1290, // 90 detik
+        score: 8.8, 
+        description: "Tips relationship yang menohok. Poin nomor 2 sangat sering terjadi tapi jarang disadari.",
+        hashtags: ["#RelationshipGoals", "#RedFlag", "#TipsCinta", "#Psikologi"],
+        reason: "Topik relatable yang memicu orang untuk men-tag pasangannya."
       },
       { 
         id: 6, 
-        title: "DIBALIK LAYAR: Bloopers Tak Terduga yang Bikin Malu", 
-        start: 50, end: 60, 
-        score: 85, 
-        reason: "Anomali audio & jeda canggung (Authenticity)" 
+        title: "REVIEW JUJUR: Produk Viral Ini Ternyata Zonk?", 
+        start: 1500, end: 1610, // 110 detik
+        score: 8.5, 
+        description: "Review tanpa filter tentang produk yang lagi hype. Kejujuran reviewer di sini sangat dihargai audiens.",
+        hashtags: ["#ReviewJujur", "#ProdukViral", "#SkincareReview", "#Unboxing"],
+        reason: "Unpopular opinion memicu rasa penasaran."
       },
       { 
         id: 7, 
-        title: "DEBAT PANAS! Pertanyaan Penonton yang Bikin Narasumber Diam", 
-        start: 450, end: 470, 
-        score: 82, 
-        reason: "Interaksi tinggi & ketegangan vokal" 
+        title: "LIFE HACK: Cara Belajar Bahasa Asing dalam 3 Bulan", 
+        start: 1800, end: 1880, // 80 detik
+        score: 8.4, 
+        description: "Metode belajar unik yang tidak diajarkan di sekolah. Sangat praktis untuk langsung dipraktekkan.",
+        hashtags: ["#BelajarBahasa", "#LifeHacks", "#TipsPintar", "#Edukasi"],
+        reason: "Informasi padat dan bermanfaat dalam waktu singkat."
       },
       { 
         id: 8, 
-        title: "MOTIVASI HIDUP: Quote Inspiratif untuk Mengubah Nasibmu", 
-        start: 500, end: 515, 
-        score: 80, 
-        reason: "Nada bicara motivasional & musik latar naik" 
+        title: "MOMEN LUCU: Bloopers Saat Syuting (Ngakak Parah)", 
+        start: 50, end: 120, // 70 detik
+        score: 8.2, 
+        description: "Kumpulan kesalahan lucu yang terjadi secara natural. Tawa narasumber sangat menular.",
+        hashtags: ["#VideoLucu", "#NgakakKocak", "#Bloopers", "#Hiburan"],
+        reason: "Pure entertainment, mudah dicerna semua kalangan."
       },
       { 
         id: 9, 
-        title: "VISUAL MEMUKAU: Transisi Edit Level Dewa (Tutorial Singkat)", 
-        start: 10, end: 20, 
-        score: 78, 
-        reason: "Perubahan visual cepat & saturasi warna" 
+        title: "PREDIKSI MASA DEPAN: AI Akan Gantikan Manusia?", 
+        start: 2000, end: 2150, // 150 detik
+        score: 8.0, 
+        description: "Analisis mendalam tentang dampak AI terhadap lapangan pekerjaan. Membuat orang berpikir dan berdiskusi.",
+        hashtags: ["#TeknologiAI", "#MasaDepan", "#TechNews", "#Diskusi"],
+        reason: "Topik trending yang memicu kekhawatiran dan diskusi."
       },
       { 
         id: 10, 
-        title: "BONUS KHUSUS: Cara Mendapatkan Akses Gratis (Limited Time)", 
-        start: 580, end: 595, 
-        score: 75, 
-        reason: "Call to Action (CTA) kuat & urgensi" 
+        title: "PESAN TERAKHIR: Kalimat Penutup yang Bikin Merinding", 
+        start: 2300, end: 2360, // 60 detik
+        score: 7.8, 
+        description: "Closing statement yang sangat powerful dan philosophical. Cocok untuk bahan renungan.",
+        hashtags: ["#QuotesBijak", "#RenunganMalam", "#KataMutiara", "#Penutup"],
+        reason: "Ending yang kuat meninggalkan kesan mendalam."
       },
     ];
     setClips(generatedClips);
@@ -146,9 +166,9 @@ const App = () => {
   };
 
   const getScoreColor = (score) => {
-    if (score >= 90) return "text-green-400";
-    if (score >= 80) return "text-yellow-400";
-    return "text-blue-400";
+    if (score >= 9.0) return "text-green-400 bg-green-400/10 border-green-400/20";
+    if (score >= 8.0) return "text-yellow-400 bg-yellow-400/10 border-yellow-400/20";
+    return "text-blue-400 bg-blue-400/10 border-blue-400/20";
   };
 
   return (
@@ -161,7 +181,7 @@ const App = () => {
               <Scissors className="w-5 h-5 text-white" />
             </div>
             <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-blue-400">
-              AutoClip AI
+              AutoClip Expert
             </span>
           </div>
           <div className="flex gap-4 text-sm text-slate-400 items-center">
@@ -185,11 +205,11 @@ const App = () => {
         {/* Input Section */}
         <div className="mb-12 text-center max-w-2xl mx-auto">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Ubah Video Panjang Jadi <br/>
-            <span className="text-purple-400">Shorts Viral</span> + SEO Judul
+            Cari Momen Viral <br/>
+            <span className="text-purple-400">Durasi 60-180 Detik</span>
           </h1>
           <p className="text-slate-400 mb-8">
-            Tempel link YouTube, AI kami akan mencari 10 momen terbaik, membuatkan <strong>Judul SEO Clickbait</strong>, dan memotongnya untuk TikTok, Reels, & Shorts.
+            Tempel link YouTube. AI kami akan bertindak sebagai <strong>Expert Clipper</strong> untuk menemukan momen dengan hook kuat, hashtag SEO, dan potensi FYP tinggi.
           </p>
 
           <div className="relative group">
@@ -215,7 +235,7 @@ const App = () => {
                 }`}
               >
                 {isAnalyzing ? <Loader2 className="animate-spin w-4 h-4" /> : <Sparkles className="w-4 h-4" />}
-                {isAnalyzing ? 'Menganalisis...' : 'Analisa Video'}
+                {isAnalyzing ? 'Menganalisis...' : 'Analisa Expert'}
               </button>
             </div>
           </div>
@@ -225,8 +245,11 @@ const App = () => {
         {isAnalyzing && (
           <div className="max-w-2xl mx-auto mb-12 bg-slate-800/50 rounded-xl p-8 border border-slate-700 text-center">
             <Loader2 className="w-10 h-10 text-purple-500 animate-spin mx-auto mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Sedang Mencari Momen Viral...</h3>
-            <p className="text-slate-400 mb-6 text-sm">{analysisStep}</p>
+            <h3 className="text-xl font-semibold mb-2">Sedang Melakukan Deep Analysis...</h3>
+            <p className="text-slate-400 mb-6 text-sm flex items-center justify-center gap-2">
+               <Sparkles className="w-4 h-4 text-yellow-400" />
+               {analysisStep}
+            </p>
             <div className="w-full bg-slate-700 rounded-full h-2.5 mb-1 overflow-hidden">
               <div 
                 className="bg-gradient-to-r from-purple-500 to-blue-500 h-2.5 rounded-full transition-all duration-300" 
@@ -265,45 +288,70 @@ const App = () => {
 
               {activeClip && (
                 <div className="bg-slate-800 rounded-xl p-6 border border-slate-700">
-                  <div className="flex justify-between items-start mb-4 gap-4">
+                  <div className="flex flex-col md:flex-row justify-between items-start mb-6 gap-4">
                     <div className="flex-1">
-                      <h2 className="text-xl md:text-2xl font-bold mb-2 leading-tight">{activeClip.title}</h2>
-                      <div className="flex items-center gap-2 text-sm text-slate-400 flex-wrap">
-                        <Clock className="w-4 h-4" />
-                        <span>{formatTime(activeClip.start)} - {formatTime(activeClip.end)}</span>
-                        <span className="w-1 h-1 bg-slate-500 rounded-full"></span>
-                        <span className="text-green-400 font-semibold">Skor Viral: {activeClip.score}/100</span>
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className={`px-2 py-1 rounded text-xs font-bold border ${getScoreColor(activeClip.score)}`}>
+                          Rating: {activeClip.score}/10
+                        </span>
+                        <span className="text-slate-400 text-xs flex items-center gap-1">
+                          <Clock className="w-3 h-3" /> {activeClip.end - activeClip.start} Detik
+                        </span>
                       </div>
+                      <h2 className="text-xl md:text-2xl font-bold mb-2 leading-tight text-white">{activeClip.title}</h2>
                     </div>
                     <div className="flex gap-2 shrink-0">
-                      <button className="p-2 bg-slate-700 hover:bg-slate-600 rounded-lg transition" title="Copy Title">
-                        <Share2 className="w-5 h-5 text-slate-300" />
-                      </button>
-                      <button className="px-4 py-2 bg-purple-600 hover:bg-purple-500 rounded-lg font-medium flex items-center gap-2 transition text-sm md:text-base">
+                      <button className="px-4 py-2 bg-purple-600 hover:bg-purple-500 rounded-lg font-medium flex items-center gap-2 transition text-sm">
                         <Download className="w-4 h-4" />
-                        <span className="hidden md:inline">Export MP4</span>
+                        Download
                       </button>
                     </div>
                   </div>
                   
-                  <div className="bg-slate-900/50 rounded-lg p-4 border border-slate-700/50">
-                    <h4 className="text-sm font-semibold text-slate-300 mb-2">Mengapa klip ini viral?</h4>
-                    <p className="text-slate-400 text-sm flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                      {activeClip.reason}
-                    </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-slate-900/50 rounded-lg p-4 border border-slate-700/50">
+                        <h4 className="text-xs font-semibold text-slate-300 uppercase mb-2 flex items-center gap-2">
+                            <FileText className="w-3 h-3 text-blue-400"/> Deskripsi Singkat
+                        </h4>
+                        <p className="text-slate-400 text-sm leading-relaxed">
+                            {activeClip.description}
+                        </p>
+                    </div>
+
+                    <div className="bg-slate-900/50 rounded-lg p-4 border border-slate-700/50">
+                        <h4 className="text-xs font-semibold text-slate-300 uppercase mb-2 flex items-center gap-2">
+                            <Sparkles className="w-3 h-3 text-yellow-400"/> Alasan Viral
+                        </h4>
+                        <p className="text-slate-400 text-sm leading-relaxed">
+                            {activeClip.reason}
+                        </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 pt-4 border-t border-slate-700/50">
+                    <h4 className="text-xs font-semibold text-slate-300 uppercase mb-2 flex items-center gap-2">
+                        <Hash className="w-3 h-3 text-purple-400"/> Hashtag SEO
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                        {activeClip.hashtags.map((tag, idx) => (
+                            <span key={idx} className="text-purple-300 bg-purple-500/10 px-2 py-1 rounded text-xs">
+                                {tag}
+                            </span>
+                        ))}
+                    </div>
                   </div>
                 </div>
               )}
             </div>
 
             {/* Right: Clips List */}
-            <div className="bg-slate-800 rounded-xl border border-slate-700 flex flex-col h-[600px]">
+            <div className="bg-slate-800 rounded-xl border border-slate-700 flex flex-col h-[700px]">
               <div className="p-4 border-b border-slate-700 bg-slate-800/50 backdrop-blur sticky top-0 rounded-t-xl z-10">
                 <h3 className="font-bold text-lg flex items-center gap-2">
                   <BarChart2 className="w-5 h-5 text-purple-400" />
-                  10 Klip Terdeteksi
+                  10 Top Potensi Viral
                 </h3>
+                <p className="text-xs text-slate-500 mt-1">Diurutkan berdasarkan skor viralitas</p>
               </div>
               
               <div className="overflow-y-auto flex-1 p-2 space-y-2 custom-scrollbar">
@@ -311,15 +359,17 @@ const App = () => {
                   <div 
                     key={clip.id}
                     onClick={() => setActiveClip(clip)}
-                    className={`p-3 rounded-lg cursor-pointer transition-all border ${
+                    className={`p-3 rounded-lg cursor-pointer transition-all border group ${
                       activeClip?.id === clip.id 
                         ? 'bg-slate-700 border-purple-500 ring-1 ring-purple-500' 
-                        : 'bg-slate-750 border-transparent hover:bg-slate-700'
+                        : 'bg-slate-750 border-transparent hover:bg-slate-700 hover:border-slate-600'
                     }`}
                   >
                     <div className="flex justify-between items-start mb-1 gap-2">
-                      <span className="font-semibold text-sm line-clamp-2 leading-snug">{clip.title}</span>
-                      <span className={`shrink-0 text-xs font-bold px-2 py-0.5 rounded-full bg-slate-900 ${getScoreColor(clip.score)}`}>
+                      <span className="font-semibold text-sm line-clamp-2 leading-snug group-hover:text-purple-300 transition-colors">
+                        {clip.title}
+                      </span>
+                      <span className={`shrink-0 text-xs font-bold px-1.5 py-0.5 rounded border ${getScoreColor(clip.score)}`}>
                         {clip.score}
                       </span>
                     </div>
@@ -328,7 +378,7 @@ const App = () => {
                         <Clock className="w-3 h-3" />
                         {formatTime(clip.start)} - {formatTime(clip.end)}
                       </span>
-                      <span>{(clip.end - clip.start)}s</span>
+                      <span className="opacity-75">{(clip.end - clip.start)}s</span>
                     </div>
                   </div>
                 ))}
@@ -342,9 +392,9 @@ const App = () => {
         {clips.length === 0 && !isAnalyzing && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 text-center">
              {[
-               {icon: <Clock className="w-8 h-8 text-blue-400"/>, title: "Hemat Waktu", desc: "Tidak perlu menonton ulang video berjam-jam."},
-               {icon: <Sparkles className="w-8 h-8 text-purple-400"/>, title: "Optimasi SEO", desc: "Judul otomatis yang ramah mesin pencari dan memancing klik."},
-               {icon: <BarChart2 className="w-8 h-8 text-green-400"/>, title: "Siap Viral", desc: "Format dioptimalkan untuk engagement tinggi."}
+               {icon: <Clock className="w-8 h-8 text-blue-400"/>, title: "Durasi Ideal", desc: "Mencari klip 60-180 detik yang pas untuk retensi audiens."},
+               {icon: <Sparkles className="w-8 h-8 text-purple-400"/>, title: "Hashtag & SEO", desc: "Otomatis meriset hashtag yang relevan dan deskripsi menarik."},
+               {icon: <Star className="w-8 h-8 text-yellow-400"/>, title: "Rating Potensi", desc: "Sistem scoring 1-10 untuk memprediksi kemungkinan viral."}
              ].map((item, idx) => (
                <div key={idx} className="p-6 bg-slate-800/30 border border-slate-700/50 rounded-xl">
                  <div className="bg-slate-800 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
