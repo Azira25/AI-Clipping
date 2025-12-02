@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { Scissors, BarChart2, Download, Clock, Share2, Youtube, Loader2, Sparkles, CheckCircle, Github, Hash, FileText, Star, Settings } from 'lucide-react';
+import React, { useState } from 'react';
+import { Scissors, BarChart2, Download, Clock, Share2, Youtube, Loader2, Sparkles, CheckCircle, Github, Hash, FileText, Star, AlertTriangle } from 'lucide-react';
 
 const App = () => {
   const [url, setUrl] = useState('');
@@ -9,33 +9,10 @@ const App = () => {
   const [analysisStep, setAnalysisStep] = useState('');
   const [clips, setClips] = useState([]);
   const [activeClip, setActiveClip] = useState(null);
+  const [errorMsg, setErrorMsg] = useState('');
   
   // State baru untuk kategori
   const [category, setCategory] = useState('business');
-
-  // Database Mockup untuk berbagai kategori
-  const mockDatabases = {
-    business: [
-      { id: 1, title: "RAHASIA SCALE UP: Strategi Tanpa Modal Besar", start: 60, end: 185, score: 9.8, description: "Mindset bootstrapping yang jarang dibongkar mentor bisnis.", hashtags: ["#Bisnis", "#TipsSukses", "#Cuan"], reason: "Hook kuat di awal, relevan untuk pemula." },
-      { id: 2, title: "DEBAT PANAS: Kebijakan Ekonomi Baru", start: 300, end: 420, score: 9.5, description: "Argumen tajam tentang inflasi yang memancing diskusi.", hashtags: ["#Ekonomi", "#Debat", "#News"], reason: "Kontroversial, memancing komentar." },
-      { id: 3, title: "KISAH INSPIRATIF: Bangkit dari Kebangkrutan", start: 900, end: 1020, score: 9.2, description: "Cerita emosional perjuangan dari nol.", hashtags: ["#Motivasi", "#Inspirasi", "#Perjuangan"], reason: "Emotional connection tinggi." },
-    ],
-    gaming: [
-      { id: 1, title: "EPIC CLUTCH! 1 vs 4 Menang Mustahil", start: 120, end: 180, score: 9.9, description: "Momen skill tingkat dewa saat HP tinggal satu bar.", hashtags: ["#Gaming", "#ProPlayer", "#Highlights"], reason: "Visual skill yang memukau penonton." },
-      { id: 2, title: "NGAKAK! Glitch Teraneh di Game Ini", start: 400, end: 460, score: 9.6, description: "Bug fisika game yang bikin karakter terbang aneh.", hashtags: ["#FunnyGlitch", "#GameFail", "#Ngakak"], reason: "Unsur komedi visual yang universal." },
-      { id: 3, title: "JUMPSCARE! Reaksi Kaget Paling Lucu", start: 600, end: 645, score: 9.3, description: "Teriakan histeris streamer saat dikejar hantu.", hashtags: ["#HorrorGame", "#Jumpscare", "#Reaction"], reason: "Reaksi emosional yang menular." },
-    ],
-    podcast: [
-      { id: 1, title: "CERITA SERAM: Pengalaman di Hotel Tua", start: 200, end: 320, score: 9.7, description: "Kisah horor nyata yang bikin merinding.", hashtags: ["#HorrorStory", "#PodcastMisteri", "#Merinding"], reason: "Narasi yang membangun ketegangan." },
-      { id: 2, title: "JOKES BAPACK2: Tawa Satu Studio Pecah", start: 500, end: 560, score: 9.5, description: "Tebak-tebakan receh tapi bikin ngakak parah.", hashtags: ["#JokesReceh", "#Komedi", "#PodcastLucu"], reason: "Hiburan ringan yang mudah dibagikan." },
-      { id: 3, title: "KLARIFIKASI: Isu Perselingkuhan Viral", start: 800, end: 900, score: 9.4, description: "Pernyataan eksklusif yang menjawab gosip netizen.", hashtags: ["#GosipArtis", "#Klarifikasi", "#Viral"], reason: "Topik trending yang dicari banyak orang." },
-    ],
-    cooking: [
-      { id: 1, title: "RESEP RAHASIA: Bumbu Nasi Goreng Abang2", start: 50, end: 140, score: 9.8, description: "Trik racikan bumbu yang bikin rasa otentik.", hashtags: ["#ResepMasak", "#Kuliner", "#TipsDapur"], reason: "Value edukasi tinggi dan praktis." },
-      { id: 2, title: "ASMR POTONG DAGING: Satisfying Banget", start: 300, end: 360, score: 9.0, description: "Suara pisau tajam dan tekstur daging HD.", hashtags: ["#ASMRFood", "#Satisfying", "#Cooking"], reason: "Visual dan audio therapy." },
-      { id: 3, title: "FAIL MOMENT: Kue Bantat Gara2 Salah Tepung", start: 600, end: 660, score: 8.8, description: "Eksperimen gagal yang jadi pelajaran lucu.", hashtags: ["#CookingFail", "#BelajarMasak", "#Lucu"], reason: "Relatable bagi pemula masak." },
-    ]
-  };
 
   const extractVideoId = (inputUrl) => {
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
@@ -43,7 +20,7 @@ const App = () => {
     return (match && match[2].length === 11) ? match[2] : null;
   };
 
-  const handleAnalyze = () => {
+  const handleAnalyze = async () => {
     const id = extractVideoId(url);
     if (!id) {
       alert("Mohon masukkan URL YouTube yang valid.");
@@ -54,58 +31,51 @@ const App = () => {
     setIsAnalyzing(true);
     setClips([]);
     setActiveClip(null);
-    setProgress(0);
+    setErrorMsg('');
+    setProgress(10);
+    setAnalysisStep('Menghubungkan ke Server Python...');
 
-    const steps = [
-      `Mendeteksi Genre: ${category.toUpperCase()}...`,
-      "Scanning durasi 60-180 detik per segmen...",
-      "Menganalisis Hook & Retention Rate...",
-      "Generate Deskripsi & Hashtag SEO...",
-      "Menghitung Rating Viralitas (1-10)..."
-    ];
-
-    let currentStep = 0;
-
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          generateExpertClips(id);
-          setIsAnalyzing(false);
-          return 100;
-        }
-        
-        if (prev % 20 === 0 && currentStep < steps.length) {
-          setAnalysisStep(steps[currentStep]);
-          currentStep++;
-        }
-        
-        return prev + 1;
+    try {
+      // 1. Kirim request ke Backend Python lokal
+      const response = await fetch('http://localhost:5000/analyze', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ url: url, category: category }),
       });
-    }, 50); // Sedikit lebih cepat untuk demo
-  };
 
-  const generateExpertClips = (vidId) => {
-    // Ambil data sesuai kategori yang dipilih user
-    const selectedData = mockDatabases[category] || mockDatabases.business;
-    
-    // Kita duplikasi data biar jadi banyak (10 klip) dengan sedikit variasi waktu
-    let generatedClips = [];
-    selectedData.forEach((item, index) => {
-        generatedClips.push({ ...item, id: index * 3 + 1 });
-        generatedClips.push({ ...item, id: index * 3 + 2, start: item.start + 1000, end: item.end + 1000, title: item.title + " (Part 2)" });
-        generatedClips.push({ ...item, id: index * 3 + 3, start: item.start + 2000, end: item.end + 2000, title: item.title + " (Bonus)" });
-    });
+      setProgress(50);
+      setAnalysisStep('Mengunduh & Memproses Transkrip Asli...');
 
-    // Ambil 10 teratas
-    setClips(generatedClips.slice(0, 10));
-    setActiveClip(generatedClips[0]);
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.error || "Gagal menganalisa video");
+      }
+
+      const data = await response.json();
+      
+      setProgress(100);
+      
+      if (data.length === 0) {
+        throw new Error("Tidak ditemukan momen menarik atau transkrip tidak tersedia.");
+      }
+
+      setClips(data);
+      setActiveClip(data[0]);
+
+    } catch (err) {
+      console.error(err);
+      setErrorMsg(err.message);
+      // Fallback ke error state, jangan load mock data biar user tau ini real
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
 
   const formatTime = (seconds) => {
-    if (seconds > 3600) return "N/A (Demo)"; // Handle waktu dummy yang besar
     const min = Math.floor(seconds / 60);
-    const sec = seconds % 60;
+    const sec = Math.floor(seconds % 60);
     return `${min}:${sec < 10 ? '0' : ''}${sec}`;
   };
 
@@ -125,19 +95,14 @@ const App = () => {
               <Scissors className="w-5 h-5 text-white" />
             </div>
             <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-blue-400">
-              AutoClip Expert
+              AutoClip Real <span className="text-xs bg-slate-800 text-slate-400 px-2 py-0.5 rounded ml-2 border border-slate-700">Python Backend</span>
             </span>
           </div>
           <div className="flex gap-4 text-sm text-slate-400 items-center">
-            <a 
-              href="https://github.com" 
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-full text-xs font-medium transition-colors border border-slate-700"
-            >
-              <Github className="w-3 h-3" />
-              GitHub
-            </a>
+            <div className="flex items-center gap-2 px-3 py-1 bg-green-900/30 border border-green-800 rounded-full text-green-400 text-xs">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                Server Mode
+            </div>
           </div>
         </div>
       </nav>
@@ -147,11 +112,11 @@ const App = () => {
         {/* Input Section */}
         <div className="mb-12 text-center max-w-2xl mx-auto">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Cari Momen Viral <br/>
-            <span className="text-purple-400">Sesuai Kategori</span>
+            Analisa Video <br/>
+            <span className="text-purple-400">Berdasarkan Transkrip Asli</span>
           </h1>
           <p className="text-slate-400 mb-8">
-            Pilih kategori video Anda agar AI bisa mendeteksi konteks yang relevan, mulai dari Gaming, Masak, hingga Bisnis.
+            Sistem ini menggunakan <strong>Python Backend</strong> untuk membaca subtitle asli video dan mencari momen relevan, bukan data palsu.
           </p>
 
           <div className="flex flex-col gap-4">
@@ -201,14 +166,27 @@ const App = () => {
                 </button>
                 </div>
             </div>
+            
+            {/* Error Message */}
+            {errorMsg && (
+                <div className="bg-red-900/20 border border-red-500/50 text-red-200 p-4 rounded-lg flex items-center gap-3 text-sm text-left mx-auto max-w-lg mt-4">
+                    <AlertTriangle className="w-5 h-5 shrink-0" />
+                    <div>
+                        <p className="font-bold">Gagal Menganalisa:</p>
+                        <p>{errorMsg}</p>
+                        <p className="text-xs mt-2 opacity-70">Tips: Pastikan server python berjalan (<code>python server.py</code>) dan video memiliki subtitle.</p>
+                    </div>
+                </div>
+            )}
+
           </div>
         </div>
 
         {/* Loading State */}
-        {isAnalyzing && (
+        {isAnalyzing && !errorMsg && (
           <div className="max-w-2xl mx-auto mb-12 bg-slate-800/50 rounded-xl p-8 border border-slate-700 text-center">
             <Loader2 className="w-10 h-10 text-purple-500 animate-spin mx-auto mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Sedang Melakukan Deep Analysis...</h3>
+            <h3 className="text-xl font-semibold mb-2">Sedang Mengunduh Data Asli...</h3>
             <p className="text-slate-400 mb-6 text-sm flex items-center justify-center gap-2">
                <Sparkles className="w-4 h-4 text-yellow-400" />
                {analysisStep}
@@ -232,7 +210,7 @@ const App = () => {
                 {activeClip ? (
                   <iframe
                     className="w-full h-full"
-                    src={`https://www.youtube.com/embed/${videoId}?start=${activeClip.start}&end=${activeClip.end}&autoplay=1&rel=0&modestbranding=1`}
+                    src={`https://www.youtube.com/embed/${videoId}?start=${Math.floor(activeClip.start)}&end=${Math.floor(activeClip.end)}&autoplay=1&rel=0&modestbranding=1`}
                     title="YouTube video player"
                     frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -254,49 +232,44 @@ const App = () => {
                           Rating: {activeClip.score}/10
                         </span>
                         <span className="text-slate-400 text-xs flex items-center gap-1">
-                          <Clock className="w-3 h-3" /> {activeClip.end - activeClip.start} Detik
+                          <Clock className="w-3 h-3" /> {Math.floor(activeClip.end - activeClip.start)} Detik
                         </span>
                       </div>
                       <h2 className="text-xl md:text-2xl font-bold mb-2 leading-tight text-white">{activeClip.title}</h2>
                     </div>
-                    <div className="flex gap-2 shrink-0">
-                      <button className="px-4 py-2 bg-purple-600 hover:bg-purple-500 rounded-lg font-medium flex items-center gap-2 transition text-sm">
-                        <Download className="w-4 h-4" />
-                        Download
-                      </button>
-                    </div>
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4">
                     <div className="bg-slate-900/50 rounded-lg p-4 border border-slate-700/50">
                         <h4 className="text-xs font-semibold text-slate-300 uppercase mb-2 flex items-center gap-2">
-                            <FileText className="w-3 h-3 text-blue-400"/> Deskripsi Singkat
+                            <FileText className="w-3 h-3 text-blue-400"/> Isi Konten (Real Transcript)
                         </h4>
-                        <p className="text-slate-400 text-sm leading-relaxed">
-                            {activeClip.description}
+                        <p className="text-slate-400 text-sm leading-relaxed italic">
+                            "{activeClip.description}"
                         </p>
                     </div>
 
-                    <div className="bg-slate-900/50 rounded-lg p-4 border border-slate-700/50">
-                        <h4 className="text-xs font-semibold text-slate-300 uppercase mb-2 flex items-center gap-2">
-                            <Sparkles className="w-3 h-3 text-yellow-400"/> Alasan Viral
-                        </h4>
-                        <p className="text-slate-400 text-sm leading-relaxed">
-                            {activeClip.reason}
-                        </p>
-                    </div>
-                  </div>
-
-                  <div className="mt-4 pt-4 border-t border-slate-700/50">
-                    <h4 className="text-xs font-semibold text-slate-300 uppercase mb-2 flex items-center gap-2">
-                        <Hash className="w-3 h-3 text-purple-400"/> Hashtag SEO
-                    </h4>
-                    <div className="flex flex-wrap gap-2">
-                        {activeClip.hashtags.map((tag, idx) => (
-                            <span key={idx} className="text-purple-300 bg-purple-500/10 px-2 py-1 rounded text-xs">
-                                {tag}
-                            </span>
-                        ))}
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-slate-900/50 rounded-lg p-4 border border-slate-700/50">
+                            <h4 className="text-xs font-semibold text-slate-300 uppercase mb-2 flex items-center gap-2">
+                                <Sparkles className="w-3 h-3 text-yellow-400"/> Alasan Viral
+                            </h4>
+                            <p className="text-slate-400 text-sm leading-relaxed">
+                                {activeClip.reason}
+                            </p>
+                        </div>
+                        <div className="bg-slate-900/50 rounded-lg p-4 border border-slate-700/50">
+                             <h4 className="text-xs font-semibold text-slate-300 uppercase mb-2 flex items-center gap-2">
+                                <Hash className="w-3 h-3 text-purple-400"/> Hashtags
+                            </h4>
+                            <div className="flex flex-wrap gap-2">
+                                {activeClip.hashtags.map((tag, idx) => (
+                                    <span key={idx} className="text-purple-300 bg-purple-500/10 px-2 py-1 rounded text-xs">
+                                        {tag}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
                     </div>
                   </div>
                 </div>
@@ -308,7 +281,7 @@ const App = () => {
               <div className="p-4 border-b border-slate-700 bg-slate-800/50 backdrop-blur sticky top-0 rounded-t-xl z-10">
                 <h3 className="font-bold text-lg flex items-center gap-2">
                   <BarChart2 className="w-5 h-5 text-purple-400" />
-                  Top Klip: {category.toUpperCase()}
+                  Hasil Analisa Real
                 </h3>
               </div>
               
@@ -337,6 +310,10 @@ const App = () => {
                         {formatTime(clip.start)} - {formatTime(clip.end)}
                       </span>
                     </div>
+                    {/* Snippet kecil teks asli */}
+                    <p className="text-[10px] text-slate-500 mt-2 line-clamp-1 italic">
+                        "{clip.description.substring(0, 40)}..."
+                    </p>
                   </div>
                 ))}
               </div>
