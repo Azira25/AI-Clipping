@@ -3,7 +3,7 @@ import { Scissors, BarChart2, Download, Clock, Share2, Youtube, Loader2, Sparkle
 
 // KONFIGURASI URL BACKEND
 // Ganti dengan URL Hugging Face Anda jika sudah deploy. Jangan ada slash '/' di akhir.
-const API_URL = 'http://localhost:7860'; 
+const API_URL = 'https://azira25-auto-clip.hf.space'; 
 
 const App = () => {
   const [url, setUrl] = useState('');
