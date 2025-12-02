@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { Scissors, BarChart2, Download, Clock, Share2, Youtube, Loader2, Sparkles, CheckCircle, Github, Hash, FileText, Star, AlertTriangle } from 'lucide-react';
 
 // KONFIGURASI URL BACKEND
-// Ganti URL di bawah ini dengan URL dari Render.com setelah Anda berhasil deploy backend.
-// Contoh: const API_URL = 'https://nama-aplikasi-anda.onrender.com';
-const API_URL = 'https://azira25-auto-clip.hf.space'; // Default untuk testing lokal
+// PENTING: Ganti URL 'http://localhost:5000' di bawah ini dengan "Direct URL" dari Hugging Face Space Anda.
+// Link Hugging Face biasanya terlihat seperti: https://username-nama-space.hf.space
+const API_URL = 'https://azira25-auto-clip.hf.space'; 
 
 const App = () => {
   const [url, setUrl] = useState('');
@@ -38,7 +38,7 @@ const App = () => {
     setActiveClip(null);
     setErrorMsg('');
     setProgress(10);
-    setAnalysisStep('Menghubungkan ke Server Cloud...'); // Updated text
+    setAnalysisStep('Menghubungkan ke Server Cloud...');
 
     try {
       // Menggunakan API_URL yang sudah dikonfigurasi di atas
@@ -181,7 +181,7 @@ const App = () => {
                         <p className="text-xs mt-2 opacity-70">
                            {API_URL.includes('localhost') 
                              ? "Tips: Pastikan server python lokal berjalan (python server.py)."
-                             : "Tips: Pastikan server cloud (Render) sedang aktif dan tidak dalam mode sleep."}
+                             : "Tips: Pastikan server cloud (Hugging Face) sedang aktif dan tidak error."}
                         </p>
                     </div>
                 </div>
